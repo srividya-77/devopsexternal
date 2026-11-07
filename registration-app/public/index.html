@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+</head>
+<body>
+  <h2>Student Registration</h2>
+  <form id="form">
+    <input id="name" placeholder="Name" /><br><br>
+    <input id="email" placeholder="Email" /><br><br>
+    <input id="mobileno" placeholder="Mobile No" /><br><br>
+    <input id="clgname" placeholder="College Name" /><br><br>
+    <button type="submit">Register</button>
+    <button type="button" onclick="loadUsers()">View Users</button>
+  </form>
+
+  <div id="msg"></div>
+  <div id="users"></div>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        name: name.value,
+        email: email.value,
+        mobileno: mobileno.value,
+        clgname: clgname.value
+      };
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      document.getElementById('msg').innerText = data.message;
+      e.target.reset();
+      loadUsers();
+    });
+
+    async function loadUsers() {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      let html = '<h3>Registered Users</h3><table border="1"><tr><th>Name</th><th>Email</th><th>Mobile</th><th>College</th></tr>';
+      users.forEach(u => {
+        html += `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.mobileno}</td><td>${u.clgname}</td></tr>`;
+      });
+      document.getElementById('users').innerHTML = html + '</table>';
+    }
+  </script>
+</body>
+</html>
